@@ -12,8 +12,7 @@
 #define LIST_CPU_2 4            /* List number for CPU_2. */
 #define SAMPST_RESPONSE_TIMES 1 /* sampst variable for response times. */
 #define STREAM_THINK 1          /* Random-number stream for think times. */
-#define STREAM_SERVICE_1 2      /* Random-number stream for service times. */
-#define STREAM_SERVICE_2 3      /* Random-number stream for service times. */
+#define STREAM_SERVICE 2      /* Random-number stream for service times. */
 #define STREAM_UNIFORM 4        /* Random-number stream for random uniform. */
 
 /* Declare non-simlib global variables. */
@@ -138,7 +137,7 @@ void arrive(void) /* Event function for arrival of job at CPU after think
                total service time since the job is just arriving). */
 
     transfer[1] = sim_time;
-    transfer[2] = expon(mean_service, STREAM_SERVICE_1);
+    transfer[2] = expon(mean_service, STREAM_SERVICE);
 
     double random_number = uniform(0, 1, STREAM_UNIFORM);
 
@@ -222,17 +221,14 @@ void end_CPU_run(int queue_number) /* Event function to end a CPU run of a job. 
 {
 
     int list_cpu;
-    int transfer_idx;
 
     if (queue_number == LIST_QUEUE_1)
     {
         list_cpu = LIST_CPU_1;
-        transfer_idx = STREAM_SERVICE_1;
     }
     else
     {
         list_cpu = LIST_CPU_2;
-        transfer_idx = STREAM_SERVICE_2;
     }
 
     /* Remove the job from the CPU. */
@@ -240,7 +236,7 @@ void end_CPU_run(int queue_number) /* Event function to end a CPU run of a job. 
 
     /* Check to see whether this job requires more CPU time. */
 
-    if (transfer[transfer_idx] > 0.0)
+    if (transfer[2] > 0.0)
     {
 
         /* This job requires more CPU time, so place it at the end of the queue
