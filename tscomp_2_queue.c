@@ -10,6 +10,7 @@
 #define LIST_QUEUE_2 2          /* List number for CPU queue. */
 #define LIST_CPU_1 3            /* List number for CPU_1. */
 #define LIST_CPU_2 4            /* List number for CPU_2. */
+#define LIST_GLOBAL 5            /* List number for CPU_2. */
 #define SAMPST_RESPONSE_TIMES 1 /* sampst variable for response times. */
 #define STREAM_THINK 1          /* Random-number stream for think times. */
 #define STREAM_SERVICE 2      /* Random-number stream for service times. */
@@ -72,7 +73,7 @@ int main() /* Main function. */
 
             /* Set maxatr = max(maximum number of attributes per record, 4) */
 
-            maxatr = 8; /* NEVER SET maxatr TO BE SMALLER THAN 4. */
+            maxatr = 4; /* NEVER SET maxatr TO BE SMALLER THAN 4. */
 
             /* Initialize the non-simlib statistical counter. */
 
@@ -139,10 +140,10 @@ void arrive(void) /* Event function for arrival of job at CPU after think
     transfer[1] = sim_time;
     transfer[2] = expon(mean_service, STREAM_SERVICE);
 
+    list_file(LAST, LIST_GLOBAL);
+
     double random_number = uniform(0, 1, STREAM_UNIFORM);
-
     int queue_number;
-
     if (random_number < 0.5)
     {
         queue_number = LIST_QUEUE_1;
@@ -151,6 +152,8 @@ void arrive(void) /* Event function for arrival of job at CPU after think
     {
         queue_number = LIST_QUEUE_2;
     }
+
+    list_remove(FIRST, LIST_GLOBAL);
 
     list_file(LAST, queue_number);
 
