@@ -2,6 +2,8 @@
 
 #include "simlib.h" /* Required for use of simlib.c. */
 
+#define CPU_CAPACITY 50
+
 #define EVENT_ARRIVAL 1         /* Event type for arrival of job to CPU. */
 #define EVENT_END_CPU_1_RUN 2   /* Event type for end of a CPU run. */
 #define EVENT_END_CPU_2_RUN 3   /* Event type for end of a CPU run. */
@@ -144,28 +146,22 @@ void arrive(void) /* Event function for arrival of job at CPU after think
 
     double random_number = uniform(0, 1, STREAM_UNIFORM);
     int queue_number;
+    int list_cpu;
+
     if (random_number < 0.5)
     {
         queue_number = LIST_QUEUE_1;
+        list_cpu = LIST_CPU_1;
     }
     else
     {
         queue_number = LIST_QUEUE_2;
+        list_cpu = LIST_CPU_2;
     }
 
     list_remove(FIRST, LIST_GLOBAL);
 
     list_file(LAST, queue_number);
-
-    int list_cpu;
-    if (queue_number == LIST_QUEUE_1)
-    {
-        list_cpu = LIST_CPU_1;
-    }
-    else
-    {
-        list_cpu = LIST_CPU_2;
-    }
 
     /* If the CPU is idle, start a CPU run. */
     if (list_size[list_cpu] == 0)
@@ -194,28 +190,23 @@ void start_CPU_run(int queue_number) /* Non-event function to start a CPU run of
     /* Place the job into the CPU. */
 
     int list_cpu;
+    int event_end_cpu;
+
     if (queue_number == LIST_QUEUE_1)
     {
         list_cpu = LIST_CPU_1;
+        event_end_cpu = EVENT_END_CPU_1_RUN;
+
     }
     else
     {
         list_cpu = LIST_CPU_2;
+        event_end_cpu = EVENT_END_CPU_2_RUN;
     }
 
     list_file(FIRST, list_cpu);
 
     /* Schedule the end of the CPU run. */
-
-    int event_end_cpu;
-    if (queue_number == LIST_QUEUE_1)
-    {
-        event_end_cpu = EVENT_END_CPU_1_RUN;
-    }
-    else
-    {
-        event_end_cpu = EVENT_END_CPU_2_RUN;
-    }
 
     event_schedule(sim_time + run_time, event_end_cpu);
 }
