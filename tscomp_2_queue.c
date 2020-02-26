@@ -2,7 +2,7 @@
 
 #include "simlib.h" /* Required for use of simlib.c. */
 
-#define CPU_CAPACITY 50
+#define QUEUE_CAPACITY 50
 
 #define EVENT_ARRIVAL 1         /* Event type for arrival of job to CPU. */
 #define EVENT_END_CPU_1_RUN 2   /* Event type for end of a CPU run. */
@@ -151,21 +151,25 @@ void arrive(void) /* Event function for arrival of job at CPU after think
     int list_cpu;
 
     queue_number = get_available_queue_number(random_number);
-    list_remove(FIRST, LIST_GLOBAL);
-    list_file(LAST, queue_number);
 
-    list_cpu = get_available_cpu_number(queue_number);
-    if (list_cpu != -1) {
+    if (queue_number != -1) {
+        list_remove(FIRST, LIST_GLOBAL);
+        list_file(LAST, queue_number);
+        list_cpu = get_available_cpu_number(queue_number);
         /* If the CPU is idle, start a CPU run. */
         if (list_size[list_cpu] == 0)
             start_CPU_run(queue_number);
-    } 
-    
+    }
+
     return;
 }
 
 int get_available_queue_number(float random_number) {
     int queue_number;
+
+    if (list_size[LIST_QUEUE_1] == QUEUE_CAPACITY && list_size[LIST_QUEUE_2] == QUEUE_CAPACITY)
+        return -1;
+
     if (random_number < 0.5)
     {        
         queue_number = LIST_QUEUE_1;
@@ -174,28 +178,29 @@ int get_available_queue_number(float random_number) {
     {
         queue_number = LIST_QUEUE_2;
     }
-        
-    return queue_number;
+
+    if (queue_number == LIST_QUEUE_1) {
+        if (list_size[LIST_QUEUE_1] < QUEUE_CAPACITY) {
+            return LIST_QUEUE_1;
+        } else {
+            return LIST_QUEUE_2;
+        }
+    } else {
+        if (list_size[LIST_QUEUE_2] < QUEUE_CAPACITY) {
+            return LIST_QUEUE_2;
+        } else {
+            return LIST_QUEUE_1;
+        }
+    }
+
 }
 
 int get_available_cpu_number(int queue_number) {
 
-    if (list_size[LIST_CPU_1] == CPU_CAPACITY && list_size[LIST_CPU_2] == CPU_CAPACITY)
-        return -1;
-
     if (queue_number == LIST_QUEUE_1) {
-        if (list_size[LIST_CPU_1] < CPU_CAPACITY) {
-            return LIST_CPU_1;
-        } else {
-            return LIST_CPU_2;
-        }
-    } else {
-        if (list_size[LIST_CPU_2] < CPU_CAPACITY) {
-            return LIST_CPU_2;
-        } else {
-            return LIST_CPU_1;
-        }
-    }
+        return LIST_CPU_1;
+    } 
+    return LIST_CPU_2;
 }
 
 void start_CPU_run(int queue_number) /* Non-event function to start a CPU run of a job. */
