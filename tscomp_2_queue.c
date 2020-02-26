@@ -8,8 +8,8 @@
 #define EVENT_END_CPU_1_RUN 2   /* Event type for end of a CPU run. */
 #define EVENT_END_CPU_2_RUN 3   /* Event type for end of a CPU run. */
 #define EVENT_END_SIMULATION 4  /* Event type for end of the simulation. */
-#define LIST_QUEUE_1 1          /* List number for CPU queue. */
-#define LIST_QUEUE_2 2          /* List number for CPU queue. */
+#define LIST_QUEUE_1 1          /* List number for 1st CPU queue. */
+#define LIST_QUEUE_2 2          /* List number for 2nd CPU queue. */
 #define LIST_CPU_1 3            /* List number for CPU_1. */
 #define LIST_CPU_2 4            /* List number for CPU_2. */
 #define LIST_GLOBAL 5            /* List number for CPU_2. */
